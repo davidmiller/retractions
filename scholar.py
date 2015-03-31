@@ -151,6 +151,7 @@ page. It is not a recursive crawler.
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
 # IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+class NotATwoHundredError(Exception): pass                
 
 import optparse
 import os
@@ -1048,25 +1049,37 @@ class ScholarQuerier(object):
             log_msg = 'HTTP response data follow'
         if err_msg is None:
             err_msg = 'request failed'
-        try:
-            ScholarUtils.log('info', 'requesting %s' % unquote(url))
+        # try:
+        ScholarUtils.log('info', 'requesting %s' % unquote(url))
 
-            req = Request(url=url, headers={'User-Agent': ScholarConf.USER_AGENT})
-            hdl = self.opener.open(req)
-            html = hdl.read()
+            # req = Request(url=url, headers={'User-Agent': ScholarConf.USER_AGENT})
+            # hdl = self.opener.open(req)
+            # html = hdl.read()
+            # code = hdl.getcode()
 
-            ScholarUtils.log('debug', log_msg)
-            ScholarUtils.log('debug', '>>>>' + '-'*68)
-            ScholarUtils.log('debug', 'url: %s' % hdl.geturl())
-            ScholarUtils.log('debug', 'result: %s' % hdl.getcode())
-            ScholarUtils.log('debug', 'headers:\n' + str(hdl.info()))
-            ScholarUtils.log('debug', 'data:\n' + html.decode('utf-8')) # For Python 3
-            ScholarUtils.log('debug', '<<<<' + '-'*68)
+        import requests
+        resp = requests.get(url)
+        code = resp.status_code
+        html = resp.content
+        
+        if code != 200:
+            raise NotATwoHundredError()
+        return html
 
-            return html
-        except Exception as err:
-            ScholarUtils.log('info', err_msg + ': %s' % err)
-            return None
+        #     ScholarUtils.log('debug', log_msg)
+        #     ScholarUtils.log('debug', '>>>>' + '-'*68)
+        #     ScholarUtils.log('debug', 'url: %s' % hdl.geturl())
+        #     ScholarUtils.log('debug', 'result: %s' % code)
+        #     ScholarUtils.log('debug', 'headers:\n' + str(hdl.info()))
+        #     ScholarUtils.log('debug', 'data:\n' + html.decode('utf-8')) # For Python 3
+        #     ScholarUtils.log('debug', '<<<<' + '-'*68)
+
+        #     return html
+        # except NotATwoHundredError:
+        #     NotATwoHundredError()
+        # except Exception as err:
+        #     ScholarUtils.log('info', err_msg + ': %s' % err)
+        #     return None
 
 
 def txt(querier, with_globals):
