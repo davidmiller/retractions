@@ -1058,7 +1058,10 @@ class ScholarQuerier(object):
             # code = hdl.getcode()
 
         import requests
-        resp = requests.get(url)
+        resp = requests.get(url, proxies={
+            'http': '124.88.67.54',
+#            'https': ,
+        })
         code = resp.status_code
         html = resp.content
         
