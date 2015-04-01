@@ -151,7 +151,6 @@ page. It is not a recursive crawler.
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
 # IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-class NotATwoHundredError(Exception): pass                
 
 import optparse
 import os
@@ -204,6 +203,8 @@ class FormatError(Error):
 class QueryArgumentError(Error):
     """A query did not have a suitable set of arguments."""
 
+class NotATwoHundredError(Error): pass
+class CaptchaError(Error):pass
 
 class ScholarConf(object):
     """Helper class for global settings."""
@@ -1059,12 +1060,15 @@ class ScholarQuerier(object):
 
         import requests
         resp = requests.get(url, proxies={
-            'http': '124.88.67.54',
+            'http': '91.183.124.41',
 #            'https': ,
         })
         code = resp.status_code
         html = resp.content
-        
+        if 'captcha' in html:
+            raise CaptchaError()
+
+        print resp
         if code != 200:
             raise NotATwoHundredError()
         return html
